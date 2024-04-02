@@ -50,41 +50,33 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 <body>
 <?php 
 function addUserToDatabase($firstName, $lastName, $email, $password) {
-    // Connect to MySQL database (replace host, username, password, and database name with your credentials)
     $conn = new mysqli("localhost", "root", "", "projekt");
 
-    // Check connection
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
 
-    // Prepare SQL statement to insert data into users table
     $sql = "INSERT INTO uzivatelia (first_name, last_name, email, password) VALUES (?, ?, ?, ?)";
 
-    // Prepare and bind parameters to prevent SQL injection
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ssss", $firstName, $lastName, $email, $password);
 
-    // Execute the statement
     if ($stmt->execute() === TRUE) {
         echo "New record created successfully";
     } else {
         echo "Error: " . $sql . "<br>" . $conn->error;
     }
 
-    // Close the statement and connection
     $stmt->close();
     $conn->close();
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Extract and validate form data
     $firstName = $_POST['firstName'];
     $lastName = $_POST['lastName'];
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    // Call the function to add user to the database
     addUserToDatabase($firstName, $lastName, $email, $password);
 }
 ?>
