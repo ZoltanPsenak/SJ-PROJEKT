@@ -62,7 +62,8 @@
 						    	<li><a href="team.php">Team</a></li>
 						    	<li><a href="experiance.php">Experiance</a></li>
 						    	<li><a href="shop.php">Company</a></li>
-								<li><a href="contact.php">Contact</a></li>								
+								<li><a href="contact.php">Contact</a></li>
+								<li><a href="admin.php">Admin</a></li>									
 								<div class="clear"></div>
 							</ul>
 							<script type="text/javascript" src="js/responsive-nav.js"></script>
