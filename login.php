@@ -49,55 +49,44 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 </head>
 <body>
 <?php
-function loginUser($email, $password) {
 
+function loginUser($email, $password) {
     $conn = new mysqli("localhost", "root", "", "projekt");
 
-    
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
 
-    
     $sql = "SELECT * FROM uzivatelia WHERE email = ? AND password = ?";
-    
-    
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ss", $email, $password);
-    
-    
     $stmt->execute();
-    
-    
     $result = $stmt->get_result();
-    
-    
+
     if ($result->num_rows == 1) {
-        
         return $result->fetch_assoc();
     } else {
-        
         return false;
     }
-
 
     $stmt->close();
     $conn->close();
 }
 
+session_start(); // Start the session
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    
     $user = loginUser($email, $password);
 
     if ($user) {
-        
-        echo "User authenticated successfully!";
+        $_SESSION['user'] = $user; // Store user data in session
+        // Redirect to index.php
+        header("Location: index.php");
+        exit(); // Make sure to exit after redirection
     } else {
-        
         echo "Invalid email or password!";
     }
 }

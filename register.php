@@ -4,10 +4,44 @@ Author URL: http://w3layouts.com
 License: Creative Commons Attribution 3.0 Unported
 License URL: http://creativecommons.org/licenses/by/3.0/
 -->
+<?php
+
+function addUserToDatabase($firstName, $lastName, $email, $password) {
+    $conn = new mysqli("localhost", "root", "", "projekt");
+
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    $sql = "INSERT INTO uzivatelia (first_name, last_name, email, password) VALUES (?, ?, ?, ?)";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ssss", $firstName, $lastName, $email, $password);
+
+    if ($stmt->execute() === TRUE) {
+        echo "Registracia prebehla úspešne";
+    } else {
+        echo "Error: " . $sql . "<br>" . $conn->error;
+    }
+
+    $stmt->close();
+    $conn->close();
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $firstName = $_POST['firstName'];
+    $lastName = $_POST['lastName'];
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+
+    addUserToDatabase($firstName, $lastName, $email, $password);
+    $_SESSION['registered'] = true; // Set a session variable
+}
+?>
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Free Snow Bootstrap Website Template | Register :: w3layouts</title>
+<title>Register</title>
 <link href="css/bootstrap.css" rel='stylesheet' type='text/css' />
 <link href="css/style.css" rel='stylesheet' type='text/css' />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -48,38 +82,6 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 </script>
 </head>
 <body>
-<?php 
-function addUserToDatabase($firstName, $lastName, $email, $password) {
-    $conn = new mysqli("localhost", "root", "", "projekt");
-
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
-
-    $sql = "INSERT INTO uzivatelia (first_name, last_name, email, password) VALUES (?, ?, ?, ?)";
-
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssss", $firstName, $lastName, $email, $password);
-
-    if ($stmt->execute() === TRUE) {
-        echo "New record created successfully";
-    } else {
-        echo "Error: " . $sql . "<br>" . $conn->error;
-    }
-
-    $stmt->close();
-    $conn->close();
-}
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $firstName = $_POST['firstName'];
-    $lastName = $_POST['lastName'];
-    $email = $_POST['email'];
-    $password = $_POST['password'];
-
-    addUserToDatabase($firstName, $lastName, $email, $password);
-}
-?>
 <?php include 'header.php'; ?>
      <div class="main">
       <div class="shop_top">
