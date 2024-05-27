@@ -1,13 +1,10 @@
-<!--A Design by W3layouts
-Author: W3layout
-Author URL: http://w3layouts.com
-License: Creative Commons Attribution 3.0 Unported
-License URL: http://creativecommons.org/licenses/by/3.0/
--->
+<?php
+session_start();
+?>
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Free Snow Bootstrap Website Template | Contact :: w3layouts</title>
+<title>Kontakt</title>
 <link href="css/bootstrap.css" rel='stylesheet' type='text/css' />
 <link href="css/style.css" rel='stylesheet' type='text/css' />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -27,7 +24,7 @@ $(document).ready(function() {
         var text = $(this).html();
         $(".dropdown dt a span").html(text);
         $(".dropdown dd ul").hide();
-        $("#result").html("Selected value is: " + getSelectedValue("sample"));
+        $("#result").html("Vybraná hodnota je: " + getSelectedValue("sample"));
     });
 
     function getSelectedValue(id) {
@@ -49,29 +46,18 @@ $(document).ready(function() {
 <body>
 <?php
 function storeContactFormSubmission($name, $email, $subject, $message) {
-    
     $conn = new mysqli("localhost", "root", "", "projekt");
-
-    
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
-
-    
     $sql = "INSERT INTO formular (name, email, subject, message) VALUES (?, ?, ?, ?)";
-
-    
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ssss", $name, $email, $subject, $message);
-
-    
     if ($stmt->execute() === TRUE) {
-        echo "New record created successfully";
+        echo "Nový záznam bol úspešne vytvorený";
     } else {
-        echo "Error: " . $sql . "<br>" . $conn->error;
+        echo "Chyba: " . $sql . "<br>" . $conn->error;
     }
-
-    
     $stmt->close();
     $conn->close();
 }
@@ -82,8 +68,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
     $subject = $_POST['subject'];
     $message = $_POST['message'];
-
-    
     storeContactFormSubmission($name, $email, $subject, $message);
 }
 ?>
@@ -98,15 +82,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                 </div>
                 <div class="col-md-5">
-                    <p class="m_8">Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat</p>
+                    <p class="m_8">Snowboarding je skvelý zimný šport, ktorý kombinuje rýchlosť, adrenalín a slobodu pohybu na snehu. S originálnym vybavením a správnou technikou môžete zažiť neopakovateľné zážitky na svahu. Bezpečnosť je však vždy na prvom mieste, preto nezabudnite na prilbu a vhodnú ochranu.</p>
                     <div class="address">
                         <p>500 Lorem Ipsum Dolor Sit,</p>
                         <p>22-56-2-9 Sit Amet, Lorem,</p>
                         <p>USA</p>
-                        <p>Phone:(00) 222 666 444</p>
+                        <p>Telefón:(00) 222 666 444</p>
                         <p>Fax: (000) 000 00 00 0</p>
                         <p>Email: <span>support[at]snow.com</span></p>
-                        <p>Follow on: <span>Facebook</span>, <span>Twitter</span></p>
+                        <p>Sledujte nás na: <span>Facebook</span>, <span>Twitter</span></p>
                     </div>
                 </div>
             </div>
@@ -114,14 +98,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="col-md-12 contact">
                     <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
                         <div class="to">
-                            <input type="text" class="text" name="name" placeholder="Name">
+                            <input type="text" class="text" name="name" placeholder="Meno">
                             <input type="text" class="text" name="email" placeholder="Email">
-                            <input type="text" class="text" name="subject" placeholder="Subject">
+                            <input type="text" class="text" name="subject" placeholder="Predmet">
                         </div>
                         <div class="text">
-                            <textarea name="message" placeholder="Message"></textarea>
+                            <textarea name="message" placeholder="Správa"></textarea>
                             <div class="form-submit">
-                                <input name="submit" type="submit" id="submit" value="Submit"><br>
+                                <input name="submit" type="submit" id="submit" value="Odoslať"><br>
                             </div>
                         </div>
                         <div class="clear"></div>

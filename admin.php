@@ -1,31 +1,36 @@
 <?php
-// Admin.php
-
 session_start();
 
-// Kontrola, či je používateľ prihlásený
-/*
-if (!isset($_SESSION['admin'])) {
-    header("Location: login.php"); // Presmerovanie na prihlasovaciu stránku, ak nie je používateľ prihlásený
+
+if(!isset($_SESSION['user'])) {
+    header("Location: index.php"); 
+}
+
+
+$loggedInUserEmail = $_SESSION['user']['email'];
+
+
+if($loggedInUserEmail !== 'admin@admin.com') {
+    header("Location: index.php"); 
     exit();
 }
-*/
 
-// Pripojenie k databáze
+
 $conn = new mysqli("localhost", "root", "", "projekt");
 if ($conn->connect_error) {
-    die("Pripojenie zlyhalo: " . $conn->connect_error);
+    die("Připojení zlyhalo: " . $conn->connect_error);
 }
 
-// Funkcia na pridanie nového produktu
+
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_product"])) {
     $name = $_POST["name"];
     $description = $_POST["description"];
     $price = $_POST["price"];
     $old_price = isset($_POST["old_price"]) ? $_POST["old_price"] : null;
     $sale = isset($_POST["sale"]) ? 1 : 0;
-
-    // Spracovanie obrázku
+    $category = $_POST["category"];
+    $image_path = $_POST["image_path"];
+   
     $target_dir = "images/";
     $target_file = $target_dir . basename($_FILES["image"]["name"]);
     $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
@@ -33,8 +38,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_product"])) {
     $target_file = $target_dir . $newFileName;
     move_uploaded_file($_FILES["image"]["tmp_name"], $target_file);
 
-    // Vloženie údajov do databázy
-    $sql = "INSERT INTO products (name, description, price, old_price, sale, image) VALUES ('$name', '$description', $price, $old_price, $sale, '$newFileName')";
+    
+    $sql = "INSERT INTO products (name, description, price, old_price, sale, image, image_path, category) VALUES ('$name', '$description', $price, $old_price, $sale, '$newFileName', '$image_path', '$category')";
     if ($conn->query($sql) === TRUE) {
         header("Location: admin.php");
         exit();
@@ -43,7 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_product"])) {
     }
 }
 
-// Získanie produktov z databázy
+
 $sql = "SELECT * FROM products";
 $result = $conn->query($sql);
 
@@ -84,7 +89,8 @@ $result = $conn->query($sql);
         input[type="number"],
         textarea,
         input[type="file"],
-        input[type="submit"] {
+        input[type="submit"],
+        select {
             width: 100%;
             padding: 10px;
             margin: 5px 0;
@@ -137,9 +143,8 @@ $result = $conn->query($sql);
 <body>
     <div class="container">
         <h2>Vitajte v Admin Paneli</h2>
-        <!--<a href="logout.php">Odhlásiť sa</a> -->
         
-        <!-- Formulár na pridanie nového produktu -->
+       
         <h3>Pridať nový produkt</h3>
         <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="POST" enctype="multipart/form-data">
             <input type="text" name="name" placeholder="Názov produktu" required><br>
@@ -147,6 +152,12 @@ $result = $conn->query($sql);
             <input type="number" name="price" placeholder="Cena" step="0.01" required><br>
             <input type="number" name="old_price" placeholder="Stará cena" step="0.01"><br>
             <label>Zlava: <input type="checkbox" name="sale"></label><br>
+            <select name="category">
+                <option value="snowboard">Snowboard</option>
+                <option value="helmet">Helmet</option>
+                <option value="glases">Glases</option>
+            </select><br>
+            <input type="text" name="image_path" placeholder="Cesta k fotke" required><br>
             <input type="file" name="image" required><br>
             <input type="submit" name="add_product" value="Pridať produkt">
         </form>
@@ -162,6 +173,7 @@ $result = $conn->query($sql);
                 <th>Stará cena</th>
                 <th>Zlava</th>
                 <th>Obrázok</th>
+                <th>Cesta k fotke</th>
                 <th>Akcia</th>
             </tr>
             <?php 
@@ -176,18 +188,21 @@ $result = $conn->query($sql);
                 <td><?php echo $row['old_price']; ?></td>
                 <td><?php echo $row['sale'] ? 'Áno' : 'Nie'; ?></td>
                 <td><img src="images/<?php echo $row['image']; ?>" alt="<?php echo $row['name']; ?>" style="max-width: 100px;"></td>
+                <td><?php echo $row['image_path']; ?></td>
                 <td>
                     <a href="edit.php?id=<?php echo $row['id']; ?>">Upraviť</a> | 
-                    <a href="delete.php?id=<?php echo $row['id']; ?>" onclick="return confirm('Naozaj chcete vymazať tento produkt?')">Vymazať</a>
-                </td>
-            </tr>
-            <?php 
-                }
-            } else {
-                echo "<tr><td colspan='8'>Žiadne produkty nenájdené</td></tr>";
-            }
-            ?>
-        </table>
-    </div>
+                    <a href="delete.php?id=<?php echo $row['id']; ?>" 
+                    onclick="return confirm('Naozaj chcete vymazať tento produkt?')">Vymazať</a>
+</td>
+</tr>
+<?php 
+}
+} else {
+echo "<tr><td colspan='9'>Žiadne produkty nenájdené</td></tr>";
+}
+?>
+</table>
+</div>
+
 </body>
 </html>

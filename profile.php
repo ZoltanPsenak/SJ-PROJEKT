@@ -1,19 +1,4 @@
-<?php
-session_start(); // Start the session
 
-if(!isset($_SESSION['user'])) {
-    header("Location: login.php");
-    exit();
-}
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    header("Location: profile.php");
-    exit();
-}
-
-$user = $_SESSION['user'];
-
-?>
 <!DOCTYPE HTML>
 <html>
 <head>

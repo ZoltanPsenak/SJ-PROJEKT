@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!--A Design by W3layouts
 Author: W3layout
 Author URL: http://w3layouts.com
@@ -57,7 +60,7 @@ if ($conn->connect_error) {
 }
 
 
-$sql = "SELECT * FROM products";
+$sql = "SELECT * FROM products WHERE category = 'snowboard'";
 $result = $conn->query($sql);
 
 ?>
@@ -70,28 +73,25 @@ $result = $conn->query($sql);
                     while($row = $result->fetch_assoc()) {
                 ?>
                 <div class="col-md-3 shop_box">
-                    <a href="single.php?id=<?php echo $row['id']; ?>">
-                        <img src="images/<?php echo $row['image']; ?>" class="img-responsive" alt=""/>
-                        <span class="new-box">
-                            <span class="new-label">New</span>
-                        </span>
-                        <?php if($row['sale'] == 1) { ?>
-                        <span class="sale-box">
-                            <span class="sale-label">Sale!</span>
-                        </span>
-                        <?php } ?>
-                        <div class="shop_desc">
-                            <h3><a href="#"><?php echo $row['name']; ?></a></h3>
-                            <p><?php echo $row['description']; ?></p>
-                            <span class="reducedfrom"><?php echo "$" . $row['old_price']; ?></span>
-                            <span class="actual"><?php echo "$" . $row['price']; ?></span><br>
-                            <ul class="buttons">
-                                <li class="cart"><a href="#">Add To Cart</a></li>
-                                <li class="shop_btn"><a href="#">Read More</a></li>
-                                <div class="clear"> </div>
-                            </ul>
-                        </div>
-                    </a>
+                    <img src="images/<?php echo $row['image']; ?>" class="img-responsive" alt=""/>
+                    <span class="new-box">
+                        <span class="new-label">New</span>
+                    </span>
+                    <?php if($row['sale'] == 1) { ?>
+                    <span class="sale-box">
+                        <span class="sale-label">Sale!</span>
+                    </span>
+                    <?php } ?>
+                    <div class="shop_desc">
+                        <h3><?php echo $row['name']; ?></h3>
+                        <p><?php echo $row['description']; ?></p>
+                        <span class="reducedfrom"><?php echo "$" . $row['old_price']; ?></span>
+                        <span class="actual"><?php echo "$" . $row['price']; ?></span><br>
+                        <ul class="buttons">
+                            <li class="cart"><a href="#">Add To Cart</a></li>
+                            <div class="clear"> </div>
+                        </ul>
+                    </div>
                 </div>
                 <?php 
                     }

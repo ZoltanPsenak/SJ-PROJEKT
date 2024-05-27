@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST['password'];
 
     addUserToDatabase($firstName, $lastName, $email, $password);
-    $_SESSION['registered'] = true; // Set a session variable
+    $_SESSION['registered'] = true; 
 }
 ?>
 <!DOCTYPE HTML>
