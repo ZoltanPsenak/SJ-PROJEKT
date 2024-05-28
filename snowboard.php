@@ -1,9 +1,28 @@
-<!--A Design by W3layouts
-Author: W3layout
-Author URL: http://w3layouts.com
-License: Creative Commons Attribution 3.0 Unported
-License URL: http://creativecommons.org/licenses/by/3.0/
--->
+<?php
+session_start();
+
+$conn = new mysqli("localhost", "root", "", "projekt");
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (isset($_POST['add_to_cart'])) {
+        $product_id = $_POST['product_id'];
+        $quantity = $_POST['quantity'];
+
+        
+        $_SESSION['cart'][$product_id] = $quantity;
+
+        header("Location: checkout.php");
+        exit();
+    }
+}
+
+$sql = "SELECT * FROM products WHERE category = 'snowboard'";
+$result = $conn->query($sql);
+
+?>
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -47,20 +66,7 @@ $(document).ready(function() {
 </script>
 </head>
 <body>
-<?php 
-include 'header.php'; 
-
-
-$conn = new mysqli("localhost", "root", "", "projekt");
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-
-$sql = "SELECT * FROM products";
-$result = $conn->query($sql);
-
-?>
+<?php include 'header.php'; ?>
 <div class="main">
     <div class="shop_top">
         <div class="container">
@@ -70,7 +76,8 @@ $result = $conn->query($sql);
                     while($row = $result->fetch_assoc()) {
                 ?>
                 <div class="col-md-3 shop_box">
-                    <a href="single.php?id=<?php echo $row['id']; ?>">
+                    <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+                        <input type="hidden" name="product_id" value="<?php echo $row['id']; ?>">
                         <img src="images/<?php echo $row['image']; ?>" class="img-responsive" alt=""/>
                         <span class="new-box">
                             <span class="new-label">New</span>
@@ -81,17 +88,17 @@ $result = $conn->query($sql);
                         </span>
                         <?php } ?>
                         <div class="shop_desc">
-                            <h3><a href="#"><?php echo $row['name']; ?></a></h3>
+                            <h3><?php echo $row['name']; ?></h3>
                             <p><?php echo $row['description']; ?></p>
                             <span class="reducedfrom"><?php echo "$" . $row['old_price']; ?></span>
                             <span class="actual"><?php echo "$" . $row['price']; ?></span><br>
+                            <input type="number" name="quantity" value="1" min="1" max="10" required><br>
                             <ul class="buttons">
-                                <li class="cart"><a href="#">Add To Cart</a></li>
-                                <li class="shop_btn"><a href="#">Read More</a></li>
+                                <li class="cart"><button type="submit" name="add_to_cart">Add To Cart</button></li>
                                 <div class="clear"> </div>
                             </ul>
                         </div>
-                    </a>
+                    </form>
                 </div>
                 <?php 
                     }

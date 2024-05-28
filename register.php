@@ -1,32 +1,6 @@
-<!--A Design by W3layouts
-Author: W3layout
-Author URL: http://w3layouts.com
-License: Creative Commons Attribution 3.0 Unported
-License URL: http://creativecommons.org/licenses/by/3.0/
--->
 <?php
-
-function addUserToDatabase($firstName, $lastName, $email, $password) {
-    $conn = new mysqli("localhost", "root", "", "projekt");
-
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
-
-    $sql = "INSERT INTO uzivatelia (first_name, last_name, email, password) VALUES (?, ?, ?, ?)";
-
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssss", $firstName, $lastName, $email, $password);
-
-    if ($stmt->execute() === TRUE) {
-        echo "Registracia prebehla úspešne";
-    } else {
-        echo "Error: " . $sql . "<br>" . $conn->error;
-    }
-
-    $stmt->close();
-    $conn->close();
-}
+session_start();
+require_once 'class/register.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $firstName = $_POST['firstName'];
@@ -35,7 +9,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST['password'];
 
     addUserToDatabase($firstName, $lastName, $email, $password);
-    $_SESSION['registered'] = true; // Set a session variable
+    $_SESSION['registered'] = true;
+
+    header("Location: index.php");
+    exit(); 
 }
 ?>
 <!DOCTYPE HTML>
@@ -83,49 +60,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
 <?php include 'header.php'; ?>
-     <div class="main">
-      <div class="shop_top">
-         <div class="container">
-                        <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>"> 
-                                <div class="register-top-grid">
-                                        <h3>PERSONAL INFORMATION</h3>
-                                        <div>
-                                            <span>First Name<label>*</label></span>
-                                            <input type="text" name="firstName"> 
-                                        </div>
-                                        <div>
-                                            <span>Last Name<label>*</label></span>
-                                            <input type="text" name="lastName"> 
-                                        </div>
-                                        <div>
-                                            <span>Email Address<label>*</label></span>
-                                            <input type="text" name="email"> 
-                                        </div>
-                                        <div class="clear"> </div>
-                                            <a class="news-letter" href="#">
-                                                <label class="checkbox"><input type="checkbox" name="checkbox" checked=""><i> </i>Sign Up for Newsletter</label>
-                                            </a>
-                                        <div class="clear"> </div>
-                                </div>
-                                <div class="clear"> </div>
-                                <div class="register-bottom-grid">
-                                        <h3>LOGIN INFORMATION</h3>
-                                        <div>
-                                            <span>Password<label>*</label></span>
-                                            <input type="password" name="password">
-                                        </div>
-                                        <div>
-                                            <span>Confirm Password<label>*</label></span>
-                                            <input type="password" name="confirmPassword">
-                                        </div>
-                                        <div class="clear"> </div>
-                                </div>
-                                <div class="clear"> </div>
-                                <input type="submit" value="submit">
-                        </form>
+<div class="main">
+    <div class="shop_top">
+        <div class="container">
+            <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>"> 
+                <div class="register-top-grid">
+                    <h3>PERSONAL INFORMATION</h3>
+                    <div>
+                        <span>First Name<label>*</label></span>
+                        <input type="text" name="firstName"> 
                     </div>
-           </div>
-      </div>
-      <?php include 'footer.php'; ?>
+                    <div>
+                        <span>Last Name<label>*</label></span>
+                        <input type="text" name="lastName"> 
+                    </div>
+                    <div>
+                        <span>Email Address<label>*</label></span>
+                        <input type="text" name="email"> 
+                    </div>
+                </div>
+                <div class="clear"> </div>
+                <div class="register-bottom-grid">
+                    <h3>LOGIN INFORMATION</h3>
+                    <div>
+                        <span>Password<label>*</label></span>
+                        <input type="password" name="password">
+                    </div>
+                    <div>
+                        <span>Confirm Password<label>*</label></span>
+                        <input type="password" name="confirmPassword">
+                    </div>
+                    <div class="clear"> </div>
+                </div>
+                <div class="clear"> </div>
+                <input type="submit" value="submit">
+            </form>
+        </div>
+    </div>
+</div>
+<?php include 'footer.php'; ?>
 </body>    
 </html>

@@ -1,3 +1,8 @@
+<?php
+require_once 'class/login.php';
+session_start(); 
+?>
+
 <!--A Design by W3layouts
 Author: W3layout
 Author URL: http://w3layouts.com
@@ -50,45 +55,12 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 <body>
 <?php
 
-function loginUser($email, $password) {
-    $conn = new mysqli("localhost", "root", "", "projekt");
-
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
-
-    $sql = "SELECT * FROM uzivatelia WHERE email = ? AND password = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ss", $email, $password);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows == 1) {
-        return $result->fetch_assoc();
-    } else {
-        return false;
-    }
-
-    $stmt->close();
-    $conn->close();
-}
-
-session_start(); // Start the session
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
     $password = $_POST['password'];
-
-    $user = loginUser($email, $password);
-
-    if ($user) {
-        $_SESSION['user'] = $user; // Store user data in session
-        // Redirect to index.php
-        header("Location: index.php");
-        exit(); // Make sure to exit after redirection
-    } else {
-        echo "Invalid email or password!";
-    }
+    $login = new Login();
+    $login->loginUser($email, $password);
 }
 ?>
 <?php include 'header.php'; ?>
@@ -120,9 +92,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     <input id="modlgn_passwd" type="password" name="password" class="inputbox" size="18" autocomplete="off">
                                 </p>
                                 <div class="remember">
-                                    <p id="login-form-remember">
-                                        <label for="modlgn_remember"><a href="#">Forget Your Password ? </a></label>
-                                    </p>
                                     <input type="submit" name="Submit" class="button" value="Login"><div class="clear"></div>
                                 </div>
                             </fieldset>

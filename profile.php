@@ -1,101 +1,89 @@
 <?php
-session_start(); // Start the session
+session_start();
+include 'class/user.php';
 
-if(!isset($_SESSION['user'])) {
-    header("Location: login.php");
+$user = new User();
+
+if (!isset($_SESSION['user'])) {
+    header("Location: index.php");
     exit();
 }
+
+$userEmail = $_SESSION['user']['email'];
+$userData = $user->getUserByEmail($userEmail);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    header("Location: profile.php");
+    $firstName = $_POST['first_name'];
+    $lastName = $_POST['last_name'];
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+
+    $message = $user->updateUser($email, $firstName, $lastName, $password);
+    $userData = $user->getUserByEmail($email);
+
+    header("Location: index.php");
     exit();
 }
 
-$user = $_SESSION['user'];
-
+$user->close();
 ?>
-<!DOCTYPE HTML>
-<html>
+
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>User Profile</title>
-    <link href="css/bootstrap.css" rel='stylesheet' type='text/css' />
-    <link href="css/style.css" rel='stylesheet' type='text/css' />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
-    <script src="js/jquery.min.js"></script>
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $(".dropdown img.flag").addClass("flagvisibility");
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+        }
 
-            $(".dropdown dt a").click(function() {
-                $(".dropdown dd ul").toggle();
-            });
-                        
-            $(".dropdown dd ul li a").click(function() {
-                var text = $(this).html();
-                $(".dropdown dt a span").html(text);
-                $(".dropdown dd ul").hide();
-                $("#result").html("Selected value is: " + getSelectedValue("sample"));
-            });
-                        
-            function getSelectedValue(id) {
-                return $("#" + id).find("dt a span.value").html();
-            }
+        input[type="text"], input[type="email"], input[type="password"], input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
 
-            $(document).bind('click', function(e) {
-                var $clicked = $(e.target);
-                if (! $clicked.parents().hasClass("dropdown"))
-                    $(".dropdown dd ul").hide();
-            });
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
 
-            $("#flagSwitcher").click(function() {
-                $(".dropdown img.flag").toggleClass("flagvisibility");
-            });
-        });
-    </script>
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
-<?php include 'header.php'; ?>
-<div class="main">
-    <div class="shop_top">
-        <div class="container">
-            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post"> 
-                <div class="register-top-grid">
-                    <h3>PERSONAL INFORMATION</h3>
-                    <div>
-                        <span>First Name<label>*</label></span>
-                        <input type="text" name="firstName" value="<?php echo $user['first_name']; ?>"> 
-                    </div>
-                    <div>
-                        <span>Last Name<label>*</label></span>
-                        <input type="text" name="lastName" value="<?php echo $user['last_name']; ?>"> 
-                    </div>
-                    <div>
-                        <span>Email Address<label>*</label></span>
-                        <input type="text" name="email" value="<?php echo $user['email']; ?>" readonly> 
-                    </div>
-                    <div class="clear"></div>
-                    <div class="clear"></div>
-                </div>
-                <div class="register-bottom-grid">
-                    <h3>LOGIN INFORMATION</h3>
-                    <div>
-                        <span>Password<label>*</label></span>
-                        <input type="password" name="password">
-                    </div>
-                    <div>
-                        <span>Confirm Password<label>*</label></span>
-                        <input type="password" name="confirmPassword">
-                    </div>
-                    <div class="clear"></div>
-                </div>
-                <div class="clear"></div>
-                <input type="submit" value="Submit">
-            </form>
-        </div>
-    </div>
+<div class="container">
+    <h2>Edit Profile</h2>
+    <?php if (isset($message)) echo "<p>$message</p>"; ?>
+    <form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+        <label for="first_name">First Name:</label>
+        <input type="text" id="first_name" name="first_name" value="<?php echo htmlspecialchars($userData['first_name']); ?>" required>
+
+        <label for="last_name">Last Name:</label>
+        <input type="text" id="last_name" name="last_name" value="<?php echo htmlspecialchars($userData['last_name']); ?>" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($userData['email']); ?>" required readonly>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" value="<?php echo htmlspecialchars($userData['password']); ?>" required>
+
+        <input type="submit" value="Update">
+    </form>
 </div>
-<?php include 'footer.php'; ?>
-</body>    
+</body>
 </html>
